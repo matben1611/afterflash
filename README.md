@@ -94,4 +94,48 @@ These settings depend on user input:
 
 ---
 
-## Project structure
+## BIOS Change Disclaimer
+
+The BIOS recommendations referenced by this project are general baseline suggestions only.
+
+They are **not universal safe settings** and should not be applied blindly.  
+BIOS behavior can vary significantly depending on:
+
+- motherboard vendor and BIOS version
+- CPU model
+- memory kit
+- cooling solution
+- overall system stability
+
+This is especially important for settings such as:
+
+- **EXPO / XMP**
+- **PBO**
+- **Curve Optimizer**
+- **Memory Context Restore**
+- **fan curves**
+- **disabling the iGPU**
+- **storage and boot-related options**
+- **Resizable BAR**
+- **Secure Boot**
+- **TPM / fTPM**
+
+Some of these changes can improve performance, boot times, temperatures, or noise levels, but they can also introduce:
+
+- failed boots
+- random crashes
+- WHEA errors
+- memory instability
+- game instability
+- sleep / idle instability
+- rare data corruption
+
+Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.
+
+If you are unsure, stay close to stock settings or only apply conservative changes.  
+Make adjustments step by step and verify stability after every change.
+
+This project does **not** apply BIOS settings automatically.  
+It only provides recommendations for manual review.
+
+You are fully responsible for any BIOS changes you make.
