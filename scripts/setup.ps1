@@ -464,14 +464,16 @@ function Open-GpuDriverPageIfWanted {
                 Write-Info "Opening AMD driver page..."
                 Start-Process "https://www.amd.com/en/support/download/drivers.html"
                 Write-Ok "AMD driver page opened."
-                break
+                Write-Host ""
+                return
             }
 
             'nvidia' {
                 Write-Info "Opening NVIDIA driver page..."
                 Start-Process "https://www.nvidia.com/en-us/drivers/"
                 Write-Ok "NVIDIA driver page opened."
-                break
+                Write-Host ""
+                return
             }
 
             default {
@@ -479,8 +481,6 @@ function Open-GpuDriverPageIfWanted {
             }
         }
     }
-
-    Write-Host ""
 }
 
 try {
