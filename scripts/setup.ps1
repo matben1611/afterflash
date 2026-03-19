@@ -226,6 +226,22 @@ If you notice crashes, stutter, WHEA errors, failed boots, or strange behavior:
     Write-Host ""
 }
 
+function Open-NiniteIfWanted {
+    Write-Host ""
+    $openNinite = Read-YesNo -Prompt "Do you want to open Ninite to install useful apps"
+
+    if ($openNinite) {
+        Write-Info "Opening Ninite in your browser..."
+        Start-Process "https://ninite.com/"
+        Write-Ok "Ninite opened."
+    }
+    else {
+        Write-Info "Ninite was not opened."
+    }
+
+    Write-Host ""
+}
+
 function Set-OptionalDiagnosticDataOff {
     Write-Host ""
     Write-Info "Disabling optional diagnostic data..."
@@ -430,6 +446,43 @@ function Start-DebloaterIfWanted {
     Write-Host ""
 }
 
+function Open-GpuDriverPageIfWanted {
+    Write-Host ""
+    $openDriverPage = Read-YesNo -Prompt "Do you want to open the GPU driver download page"
+
+    if (-not $openDriverPage) {
+        Write-Info "GPU driver page was not opened."
+        Write-Host ""
+        return
+    }
+
+    while ($true) {
+        $gpuVendor = (Read-Host "Which GPU vendor do you use? (AMD/NVIDIA)").Trim().ToLowerInvariant()
+
+        switch ($gpuVendor) {
+            'amd' {
+                Write-Info "Opening AMD driver page..."
+                Start-Process "https://www.amd.com/en/support/download/drivers.html"
+                Write-Ok "AMD driver page opened."
+                break
+            }
+
+            'nvidia' {
+                Write-Info "Opening NVIDIA driver page..."
+                Start-Process "https://www.nvidia.com/en-us/drivers/"
+                Write-Ok "NVIDIA driver page opened."
+                break
+            }
+
+            default {
+                Write-Host "Please enter AMD or NVIDIA."
+            }
+        }
+    }
+
+    Write-Host ""
+}
+
 try {
     Restart-AsAdmin
 
@@ -443,6 +496,14 @@ try {
     Wait-A-Bit
 
     Create-BiosRecommendationsFileIfWanted
+
+    Wait-A-Bit
+
+    Open-NiniteIfWanted
+
+    Wait-A-Bit
+
+    Open-GpuDriverPageIfWanted
 
     Wait-A-Bit
 
