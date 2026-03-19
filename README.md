@@ -1,4 +1,4 @@
-# Optimizer
+# Finalflash
 Windows PowerShell setup script for quickly applying post-build system tweaks, performance settings, and optional debloat actions on a fresh PC.
 
 # Windows Post-Build Setup Script
@@ -61,9 +61,6 @@ Some settings are not forced automatically and instead ask the user for confirma
 - Do Not Disturb configuration
 - Debloater launch
 
-### Small simulated wait times
-A small random delay between steps makes execution feel less abrupt and improves readability while the script runs.
-
 ### Clean terminal output
 The script prints structured status messages to show what is happening during execution.
 
@@ -94,11 +91,61 @@ These settings depend on user input:
 
 ---
 
-## Project structure
+## External Tool Integration
 
-A minimal structure for this repository can look like this:
+At the end of the setup process, this project can optionally launch **Win11Debloat** by **Raphire**.
 
-```text
-.
-├── setup.ps1
-└── README.md
+Win11Debloat is a lightweight PowerShell project for decluttering and customizing Windows. According to its repository, it can remove pre-installed apps, disable telemetry, remove intrusive interface elements, and perform other Windows customization changes. It supports both **Windows 10** and **Windows 11**. :contentReference[oaicite:0]{index=0}
+
+In this project, Win11Debloat is not bundled directly.  
+Instead, it is started optionally through its official quick-launch command:
+
+```powershell
+& ([scriptblock]::Create((irm "https://debloat.raphi.re/")))
+```
+
+## BIOS Change Disclaimer
+
+The BIOS recommendations referenced by this project are general baseline suggestions only.
+
+They are **not universal safe settings** and should not be applied blindly.  
+BIOS behavior can vary significantly depending on:
+
+- motherboard vendor and BIOS version
+- CPU model
+- memory kit
+- cooling solution
+- overall system stability
+
+This is especially important for settings such as:
+
+- **EXPO / XMP**
+- **PBO**
+- **Curve Optimizer**
+- **Memory Context Restore**
+- **fan curves**
+- **disabling the iGPU**
+- **storage and boot-related options**
+- **Resizable BAR**
+- **Secure Boot**
+- **TPM / fTPM**
+
+Some of these changes can improve performance, boot times, temperatures, or noise levels, but they can also introduce:
+
+- failed boots
+- random crashes
+- WHEA errors
+- memory instability
+- game instability
+- sleep / idle instability
+- rare data corruption
+
+Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.
+
+If you are unsure, stay close to stock settings or only apply conservative changes.  
+Make adjustments step by step and verify stability after every change.
+
+This project does **not** apply BIOS settings automatically.  
+It only provides recommendations for manual review.
+
+You are fully responsible for any BIOS changes you make.
