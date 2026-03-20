@@ -164,12 +164,13 @@ Some of these changes can improve performance, boot times, temperatures, or nois
 - sleep / idle instability
 - rare data corruption
 
-Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.
-
-If you are unsure, stay close to stock settings or only apply conservative changes.  
-Make adjustments step by step and verify stability after every change.
-
-This project does **not** apply BIOS settings automatically.  
-It only provides recommendations for manual review.
-
-You are fully responsible for any BIOS changes you make.
+> ## ⚠️ BIOS WARNING
+> **Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.**  
+>  
+> **If you are unsure, stay close to stock settings or only apply conservative changes.**  
+> **Make adjustments step by step and verify stability after every change.**  
+>  
+> **This project does not apply BIOS settings automatically.**  
+> **It only provides recommendations for manual review.**  
+>  
+> **You are fully responsible for any BIOS changes you make.**
