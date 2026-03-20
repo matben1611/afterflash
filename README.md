@@ -54,7 +54,7 @@ This project aims to provide:
 - A quick post-build configuration workflow
 - A lightweight PowerShell-based solution without a GUI
 - A simple foundation that can be expanded over time
-- A more user-friendly setup experience through prompts and automatic elevation
+- A tool to get the maximum performance out of your expensive hardware
 
 ---
 
