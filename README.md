@@ -1,13 +1,16 @@
+<!-- markdownlint-disable MD033 -->
+
+# Afterflash
+
 <p align="center">
   <img src="afterflash.png" alt="afterflash.png" width="500">
 </p>
 
-# afterflash
 Windows PowerShell setup script for quickly applying post-build system tweaks, performance settings, and optional debloat actions on a fresh PC. Built out of my personal interest in PC building and optimization, with the goal of saving time and reducing repetitive setup work after each build.
 
 This serves as a personal documentation base for my own builds and related projects, and I plan to continue expanding it over time.
 
-# Windows Post-Build Setup Script
+## Windows Post-Build Setup Script
 
 A PowerShell-based post-build setup script for freshly installed Windows systems.
 
@@ -15,8 +18,6 @@ This project automates a small set of useful Windows configuration changes after
 It is designed to be simple, interactive, and easy to extend without requiring a graphical user interface.
 
 The script currently focuses on a few performance-related and quality-of-life settings, optional prompts for selected features, and the ability to launch an external debloater at the end.
-
----
 
 ## Overview
 
@@ -45,8 +46,6 @@ The current implementation includes:
 
 The script is intentionally interactive for selected settings so the user can decide case by case during execution.
 
----
-
 ## Goals
 
 This project aims to provide:
@@ -55,8 +54,6 @@ This project aims to provide:
 - A lightweight portable PowerShell-based solution without a GUI
 - A simple foundation that can be expanded over time
 - A tool to get the maximum performance out of your expensive hardware
-
----
 
 ### If PowerShell says the script is not digitally signed
 
@@ -67,14 +64,15 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 Get-ChildItem -Path . -Filter *.ps1 -Recurse | Unblock-File
 ```
 
-
 ## Features
 
 ### Automatic elevation
+
 The script automatically checks whether it is running with administrator privileges.  
 If not, it relaunches itself as Administrator.
 
 ### Interactive prompts
+
 Some settings are not forced automatically and instead ask the user for confirmation, for example:
 
 - X3D CPU power plan handling
@@ -84,9 +82,8 @@ Some settings are not forced automatically and instead ask the user for confirma
 - Debloater launch
 
 ### Clean terminal output
-The script prints structured status messages to show what is happening during execution.
 
----
+The script prints structured status messages to show what is happening during execution.
 
 ## Included settings
 
@@ -111,8 +108,6 @@ These settings depend on user input:
 - Do Not Disturb = optional manual configuration prompt
 - Debloater launch = optional
 
----
-
 ## External Tool Integration
 
 At the end of the setup process, this project can optionally launch **Win11Debloat** by **Raphire**.
@@ -123,15 +118,28 @@ In this project, Win11Debloat is not bundled directly.
 Instead, it is started optionally through its official quick-launch command:
 
 ## Win11Debloat
+
 ```powershell
 & ([scriptblock]::Create((irm "https://debloat.raphi.re/")))
 ```
- 
+
 ## Ninite
-[Ninite](https://ninite.com/) is not bundled with this repository. 
+
+[Ninite](https://ninite.com/) is not bundled with this repository.
 If selected by the user, the script simply opens the official website in the browser.
 
 ## BIOS Change Disclaimer
+
+> [!CAUTION]
+> **Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.**
+>
+> **If you are unsure, stay close to stock settings or only apply conservative changes.**  
+> **Make adjustments step by step and verify stability after every change.**
+>
+> **This project does not apply BIOS settings automatically.**  
+> **It only provides recommendations for manual review.**
+>
+> **You are fully responsible for any BIOS changes you make.**
 
 The BIOS recommendations referenced by this project are general baseline suggestions only.
 
@@ -166,16 +174,3 @@ Some of these changes can improve performance, boot times, temperatures, or nois
 - game instability
 - sleep / idle instability
 - rare data corruption
-
----
-
-> ## ⚠️ BIOS WARNING
-> **Do not change BIOS settings unless you understand what they do and are willing to test system stability properly afterward.**  
->  
-> **If you are unsure, stay close to stock settings or only apply conservative changes.**  
-> **Make adjustments step by step and verify stability after every change.**  
->  
-> **This project does not apply BIOS settings automatically.**  
-> **It only provides recommendations for manual review.**  
->  
-> **You are fully responsible for any BIOS changes you make.**
