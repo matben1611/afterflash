@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 -->
 
-# Afterflash
+# afterflash
 
 <p align="center">
   <img src="afterflash.png" alt="afterflash.png" width="500">
