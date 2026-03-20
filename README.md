@@ -129,7 +129,7 @@ Instead, it is started optionally through its official quick-launch command:
  
 ## Ninite
 [Ninite](https://ninite.com/) is not bundled with this repository. 
-If selected by the user, the script simply opens the official website in the browser:
+If selected by the user, the script simply opens the official website in the browser.
 
 ## BIOS Change Disclaimer
 
