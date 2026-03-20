@@ -121,9 +121,12 @@ Win11Debloat is a lightweight PowerShell project for decluttering and customizin
 In this project, Win11Debloat is not bundled directly.  
 Instead, it is started optionally through its official quick-launch command:
 
+##Win11Debloat
 ```powershell
 & ([scriptblock]::Create((irm "https://debloat.raphi.re/")))
 ```
+
+##Ninite
 [Ninite](https://ninite.com/) is not bundled with this repository. 
 If selected by the user, the script simply opens the official website in the browser:
 
