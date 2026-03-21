@@ -446,6 +446,116 @@ function Start-DebloaterIfWanted {
     Write-Host ""
 }
 
+function Show-SystemInformation {
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "           System Information           " -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    $ramType = "Unknown"
+
+$ramType = "Not reported by system"
+
+try {
+    $firstModule = $memoryModules | Select-Object -First 1
+
+    $smbiosType = $firstModule.SMBIOSMemoryType
+    $memoryType = $firstModule.MemoryType
+
+    switch ($smbiosType) {
+        20 { $ramType = "DDR" }
+        21 { $ramType = "DDR2" }
+        24 { $ramType = "DDR3" }
+        26 { $ramType = "DDR4" }
+        34 { $ramType = "DDR5" }
+        default {
+            switch ($memoryType) {
+                20 { $ramType = "DDR" }
+                21 { $ramType = "DDR2" }
+                24 { $ramType = "DDR3" }
+                default { $ramType = "Not reported by system" }
+            }
+        }
+    }
+}
+catch {
+    $ramType = "Not reported by system"
+}
+
+    try {
+        $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name
+    }
+    catch {
+        $cpu = "Unknown"
+    }
+
+    try {
+        $gpuList = Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name
+        $gpu = ($gpuList | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique) -join ", "
+        if (-not $gpu) {
+            $gpu = "Unknown"
+        }
+    }
+    catch {
+        $gpu = "Unknown"
+    }
+
+    $totalRamGb = "Unknown"
+    $ramSpeed = "Unknown"
+
+    try {
+        $memoryModules = Get-CimInstance Win32_PhysicalMemory
+    }
+    catch {
+        $memoryModules = @()
+    }
+
+    if ($memoryModules -and $memoryModules.Count -gt 0) {
+        try {
+            $totalRamBytes = ($memoryModules | Measure-Object -Property Capacity -Sum).Sum
+            if ($totalRamBytes) {
+                $totalRamGb = [math]::Round($totalRamBytes / 1GB, 0)
+            }
+        }
+        catch {
+            $totalRamGb = "Unknown"
+        }
+
+        try {
+            $ramSpeedValue = $memoryModules |
+            ForEach-Object {
+                if ($_.ConfiguredClockSpeed -and $_.ConfiguredClockSpeed -gt 0) {
+                    $_.ConfiguredClockSpeed
+                }
+                elseif ($_.Speed -and $_.Speed -gt 0) {
+                    $_.Speed
+                }
+            } |
+            Where-Object { $_ } |
+            Select-Object -First 1
+
+            if ($ramSpeedValue) {
+                $ramSpeed = "$ramSpeedValue MT/s"
+            }
+            else {
+                $ramSpeed = "Not reported by system"
+            }
+        }
+        catch {
+            $ramSpeed = "Not reported by system"
+        }
+    }
+
+    Write-Host ("{0,-18}: {1}" -f "CPU", $cpu)
+    Write-Host ("{0,-18}: {1}" -f "GPU", $gpu)
+    Write-Host ("{0,-18}: {1}" -f "RAM Type", $ramType)
+    Write-Host ("{0,-18}: {1}" -f "Installed RAM", $(if ($totalRamGb -ne "Unknown") { "$totalRamGb GB" } else { "Unknown" }))
+    Write-Host ("{0,-18}: {1}" -f "RAM Speed", $ramSpeed)
+    Write-Host ("{0,-18}: {1}" -f "RAM Timings", "Not reported by Windows")
+    Write-Host ""
+}
+
 function Open-GpuDriverPageIfWanted {
     Write-Host ""
     $openDriverPage = Read-YesNo -Prompt "Do you want to open the GPU driver download page"
@@ -493,6 +603,10 @@ try {
     Write-Host ""
 
     Wait-A-Bit
+    Wait-A-Bit
+
+    Show-SystemInformation
+
     Wait-A-Bit
 
     Set-BiosRecommendationsFileIfWanted
