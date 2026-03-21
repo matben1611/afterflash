@@ -646,8 +646,80 @@ function Open-GpuDriverPageIfWanted {
         return
     }
 
+    try {
+        $gpus = Get-CimInstance Win32_VideoController -ErrorAction Stop |
+            Select-Object -ExpandProperty Name |
+            Where-Object { $_ -and $_.Trim() -ne "" }
+
+        if ($gpus) {
+            # Filter out integrated GPUs and prioritize discrete GPUs
+            $integratedPatterns = @('Intel.*Graphics', 'AMD.*Radeon.*Graphics', 'Microsoft.*Hyper-V')
+            $dedicatedGpus = @()
+            $integratedGpus = @()
+
+            foreach ($gpu in $gpus) {
+                $isIntegrated = $false
+                foreach ($pattern in $integratedPatterns) {
+                    if ($gpu -match $pattern) {
+                        $isIntegrated = $true
+                        $integratedGpus += $gpu
+                        break
+                    }
+                }
+
+                if (-not $isIntegrated) {
+                    $dedicatedGpus += $gpu
+                }
+            }
+
+            # Prefer dedicated GPU, fallback to integrated
+            $selectedGpu = if ($dedicatedGpus.Count -gt 0) { $dedicatedGpus[0] } else { $gpus[0] }
+
+            $selectedGpuLower = $selectedGpu.ToLowerInvariant()
+
+            if ($selectedGpuLower -match 'nvidia') {
+                Write-Info "NVIDIA GPU detected: $selectedGpu"
+                Write-Info "Opening NVIDIA driver page..."
+                Start-Process "https://www.nvidia.com/en-us/drivers/"
+                Write-Ok "NVIDIA driver page opened."
+                Write-Host ""
+                return
+            }
+            elseif ($selectedGpuLower -match 'amd.*radeon' -and $selectedGpuLower -notmatch 'graphics') {
+                Write-Info "AMD Radeon GPU detected: $selectedGpu"
+                Write-Info "Opening AMD driver page..."
+                Start-Process "https://www.amd.com/en/support/download/drivers.html"
+                Write-Ok "AMD driver page opened."
+                Write-Host ""
+                return
+            }
+            elseif ($selectedGpuLower -match 'amd') {
+                Write-Info "AMD GPU detected: $selectedGpu"
+                Write-Info "Opening AMD driver page..."
+                Start-Process "https://www.amd.com/en/support/download/drivers.html"
+                Write-Ok "AMD driver page opened."
+                Write-Host ""
+                return
+            }
+            else {
+                Write-WarnMsg "Could not determine GPU vendor from: $selectedGpu"
+                Write-Info "Detected GPUs: $($gpus -join ', ')"
+                Write-Host ""
+            }
+        }
+        else {
+            Write-WarnMsg "No GPUs detected via WMI."
+        }
+    }
+    catch {
+        Write-Verbose "Unable to query GPU information via WMI"
+    }
+
+    # Fallback to manual selection
+    Write-Host ""
+
     while ($true) {
-        $gpuVendor = (Read-Host "Which GPU vendor do you use? (AMD/NVIDIA)").Trim().ToLowerInvariant()
+        $gpuVendor = (Read-Host "Please specify your GPU vendor (NVIDIA/AMD)").Trim().ToLowerInvariant()
 
         switch ($gpuVendor) {
             'amd' {
@@ -667,7 +739,7 @@ function Open-GpuDriverPageIfWanted {
             }
 
             default {
-                Write-Host "Please enter AMD or NVIDIA."
+                Write-Host "Please enter NVIDIA or AMD."
             }
         }
     }
