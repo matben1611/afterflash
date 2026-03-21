@@ -453,77 +453,44 @@ function Show-SystemInformation {
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
 
-    $ramType = "Unknown"
-
-$ramType = "Not reported by system"
-
-try {
-    $firstModule = $memoryModules | Select-Object -First 1
-
-    $smbiosType = $firstModule.SMBIOSMemoryType
-    $memoryType = $firstModule.MemoryType
-
-    switch ($smbiosType) {
-        20 { $ramType = "DDR" }
-        21 { $ramType = "DDR2" }
-        24 { $ramType = "DDR3" }
-        26 { $ramType = "DDR4" }
-        34 { $ramType = "DDR5" }
-        default {
-            switch ($memoryType) {
-                20 { $ramType = "DDR" }
-                21 { $ramType = "DDR2" }
-                24 { $ramType = "DDR3" }
-                default { $ramType = "Not reported by system" }
-            }
-        }
-    }
-}
-catch {
-    $ramType = "Not reported by system"
-}
+    $cpu = "Unknown"
+    $gpu = "Unknown"
+    $installedRam = "Unknown"
+    $ramSpeed = "Not reported by system"
+    $mainboardName = "Unknown"
+    $biosVersion = "Unknown"
+    $osVersion = "Unknown"
+    $osType = "Unknown"
 
     try {
-        $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name
+        $cpu = Get-CimInstance Win32_Processor |
+            Select-Object -First 1 -ExpandProperty Name
     }
-    catch {
-        $cpu = "Unknown"
-    }
+    catch {}
 
     try {
-        $gpuList = Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name
-        $gpu = ($gpuList | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique) -join ", "
+        $gpuList = Get-CimInstance Win32_VideoController |
+            Select-Object -ExpandProperty Name
+
+        $gpu = ($gpuList |
+            Where-Object { $_ -and $_.Trim() -ne "" } |
+            Select-Object -Unique) -join ", "
+
         if (-not $gpu) {
             $gpu = "Unknown"
         }
     }
-    catch {
-        $gpu = "Unknown"
-    }
-
-    $totalRamGb = "Unknown"
-    $ramSpeed = "Unknown"
+    catch {}
 
     try {
         $memoryModules = Get-CimInstance Win32_PhysicalMemory
-    }
-    catch {
-        $memoryModules = @()
-    }
+        $totalRamBytes = ($memoryModules | Measure-Object -Property Capacity -Sum).Sum
 
-    if ($memoryModules -and $memoryModules.Count -gt 0) {
-        try {
-            $totalRamBytes = ($memoryModules | Measure-Object -Property Capacity -Sum).Sum
-            if ($totalRamBytes) {
-                $totalRamGb = [math]::Round($totalRamBytes / 1GB, 0)
-            }
-        }
-        catch {
-            $totalRamGb = "Unknown"
+        if ($totalRamBytes) {
+            $installedRam = "$([math]::Round($totalRamBytes / 1GB, 0)) GB"
         }
 
-        try {
-            $ramSpeedValue = $memoryModules |
+        $ramSpeedValue = $memoryModules |
             ForEach-Object {
                 if ($_.ConfiguredClockSpeed -and $_.ConfiguredClockSpeed -gt 0) {
                     $_.ConfiguredClockSpeed
@@ -535,24 +502,76 @@ catch {
             Where-Object { $_ } |
             Select-Object -First 1
 
-            if ($ramSpeedValue) {
-                $ramSpeed = "$ramSpeedValue MT/s"
-            }
-            else {
-                $ramSpeed = "Not reported by system"
-            }
-        }
-        catch {
-            $ramSpeed = "Not reported by system"
+        if ($ramSpeedValue) {
+            $ramSpeed = "$ramSpeedValue MT/s"
         }
     }
+    catch {}
 
-    Write-Host ("{0,-18}: {1}" -f "CPU", $cpu)
-    Write-Host ("{0,-18}: {1}" -f "GPU", $gpu)
-    Write-Host ("{0,-18}: {1}" -f "RAM Type", $ramType)
-    Write-Host ("{0,-18}: {1}" -f "Installed RAM", $(if ($totalRamGb -ne "Unknown") { "$totalRamGb GB" } else { "Unknown" }))
-    Write-Host ("{0,-18}: {1}" -f "RAM Speed", $ramSpeed)
-    Write-Host ("{0,-18}: {1}" -f "RAM Timings", "Not reported by Windows")
+    try {
+        $baseBoard = Get-CimInstance Win32_BaseBoard | Select-Object -First 1
+
+        $invalidBoardValues = @(
+            "",
+            "Default string",
+            "To be filled by O.E.M.",
+            "System Version",
+            "Undefined"
+        )
+
+        if (
+            $baseBoard.Product -and
+            $invalidBoardValues -notcontains $baseBoard.Product.Trim()
+        ) {
+            $mainboardName = $baseBoard.Product
+        }
+        else {
+            $mainboardName = "Not reported"
+        }
+    }
+    catch {}
+
+    try {
+        $bios = Get-CimInstance Win32_BIOS | Select-Object -First 1
+
+        if ($bios.SMBIOSBIOSVersion -and $bios.SMBIOSBIOSVersion.Trim() -ne "") {
+            $biosVersion = $bios.SMBIOSBIOSVersion
+        }
+        elseif ($bios.Version -and $bios.Version.Trim() -ne "") {
+            $biosVersion = $bios.Version
+        }
+    }
+    catch {}
+
+    try {
+        $os = Get-CimInstance Win32_OperatingSystem | Select-Object -First 1
+
+        $caption = $os.Caption
+        $build = $os.BuildNumber
+        $version = $os.Version
+
+        if ($caption -and $build -and $version) {
+            $osVersion = "$caption ($version, Build $build)"
+        }
+        elseif ($caption) {
+            $osVersion = $caption
+        }
+
+        if ($os.OSArchitecture -and $os.OSArchitecture.Trim() -ne "") {
+            $osType = $os.OSArchitecture
+        }
+    }
+    catch {}
+
+    Write-Host ("{0,-20}: {1}" -f "CPU", $cpu)
+    Write-Host ("{0,-20}: {1}" -f "GPU", $gpu)
+    Write-Host ("{0,-20}: {1}" -f "Installed RAM", $installedRam)
+    Write-Host ("{0,-20}: {1}" -f "RAM Speed", $ramSpeed)
+    Write-Host ("{0,-20}: {1}" -f "Mainboard", $mainboardName)
+    Write-Host ("{0,-20}: {1}" -f "BIOS Version", $biosVersion)
+    Write-Host ("{0,-20}: {1}" -f "OS Version", $osVersion)
+    Write-Host ("{0,-20}: {1}" -f "OS Type", $osType)
+
     Write-Host ""
 }
 
