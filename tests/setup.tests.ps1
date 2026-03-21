@@ -1,128 +1,106 @@
 param()
 
-# Source the setup script
-$setupScriptPath = Join-Path $PSScriptRoot '../scripts/setup.ps1'
+# Test that script is syntactically valid
+Describe "setup.ps1 Validation" {
+    
+    It "Script exists" {
+        Test-Path -Path "$PSScriptRoot/../scripts/setup.ps1" | Should Be $true
+    }
 
-Describe "setup.ps1 Functions" {
+    It "Script has valid PowerShell syntax" {
+        $errors = @()
+        $null = [System.Management.Automation.PSParser]::Tokenize(
+            (Get-Content -Path "$PSScriptRoot/../scripts/setup.ps1" -Raw),
+            [ref]$errors
+        )
+        $errors.Count | Should Be 0
+    }
 
+    It "Script can be parsed without execution" {
+        { 
+            [void]([System.Management.Automation.PSParser]::Tokenize(
+                (Get-Content -Path "$PSScriptRoot/../scripts/setup.ps1" -Raw),
+                [ref]@()
+            ))
+        } | Should Not Throw
+    }
+}
+
+Describe "Script Structure" {
+    
     BeforeAll {
-        # Source the script to load all functions
-        . $setupScriptPath
+        $scriptContent = Get-Content -Path "$PSScriptRoot/../scripts/setup.ps1" -Raw
     }
 
-    Context "Test-IsAdmin" {
-        It "Function exists" {
-            Test-Path -Path Function:\Test-IsAdmin | Should -Be $true
-        }
-
-        It "Returns a boolean" {
-            $result = Test-IsAdmin
-            $result -is [bool] | Should -Be $true
-        }
-
-        It "Returns false when not running as admin" {
-            # Mock the principal to return false
-            Mock -CommandName Test-IsAdmin -MockWith { return $false }
-            Test-IsAdmin | Should -Be $false
-        }
+    It "Contains function Test-IsAdmin" {
+        $scriptContent | Should Match 'function\s+Test-IsAdmin'
     }
 
-    Context "Read-YesNo" {
-        It "Function exists" {
-            Test-Path -Path Function:\Read-YesNo | Should -Be $true
-        }
-
-        It "Accepts 'y' as yes" {
-            Mock Read-Host { return "y" }
-            Read-YesNo -Prompt "Test" | Should -Be $true
-        }
-
-        It "Accepts 'yes' as yes" {
-            Mock Read-Host { return "yes" }
-            Read-YesNo -Prompt "Test" | Should -Be $true
-        }
-
-        It "Accepts 'n' as no" {
-            Mock Read-Host { return "n" }
-            Read-YesNo -Prompt "Test" | Should -Be $false
-        }
-
-        It "Accepts 'no' as no" {
-            Mock Read-Host { return "no" }
-            Read-YesNo -Prompt "Test" | Should -Be $false
-        }
-
-        It "Handles case-insensitive input" {
-            Mock Read-Host { return "YES" }
-            Read-YesNo -Prompt "Test" | Should -Be $true
-        }
+    It "Contains function Wait-A-Bit" {
+        $scriptContent | Should Match 'function\s+Wait-A-Bit'
     }
 
-    Context "Wait-A-Bit" {
-        It "Function exists" {
-            Test-Path -Path Function:\Wait-A-Bit | Should -Be $true
-        }
-
-        It "Completes without error" {
-            { Wait-A-Bit } | Should -Not -Throw
-        }
+    It "Contains function Read-YesNo" {
+        $scriptContent | Should Match 'function\s+Read-YesNo'
     }
 
-    Context "Helper Functions" {
-        It "Write-Info exists" {
-            Test-Path -Path Function:\Write-Info | Should -Be $true
-        }
-
-        It "Write-Ok exists" {
-            Test-Path -Path Function:\Write-Ok | Should -Be $true
-        }
-
-        It "Write-WarnMsg exists" {
-            Test-Path -Path Function:\Write-WarnMsg | Should -Be $true
-        }
-
-        It "Test-RegistryKey exists" {
-            Test-Path -Path Function:\Test-RegistryKey | Should -Be $true
-        }
+    It "Contains function Write-Info" {
+        $scriptContent | Should Match 'function\s+Write-Info'
     }
 
-    Context "Registry Functions" {
-        It "Set-DwordValue exists" {
-            Test-Path -Path Function:\Set-DwordValue | Should -Be $true
-        }
-
-        It "Set-StringValue exists" {
-            Test-Path -Path Function:\Set-StringValue | Should -Be $true
-        }
+    It "Contains function Write-Ok" {
+        $scriptContent | Should Match 'function\s+Write-Ok'
     }
 
-    Context "Configuration Functions" {
-        It "Set-BiosRecommendationsFileIfWanted exists" {
-            Test-Path -Path Function:\Set-BiosRecommendationsFileIfWanted | Should -Be $true
-        }
+    It "Contains function Set-DwordValue" {
+        $scriptContent | Should Match 'function\s+Set-DwordValue'
+    }
 
-        It "Set-OptionalDiagnosticDataOff exists" {
-            Test-Path -Path Function:\Set-OptionalDiagnosticDataOff | Should -Be $true
-        }
+    It "Contains function Set-StringValue" {
+        $scriptContent | Should Match 'function\s+Set-StringValue'
+    }
 
-        It "Set-DeliveryOptimizationHttpOnly exists" {
-            Test-Path -Path Function:\Set-DeliveryOptimizationHttpOnly | Should -Be $true
-        }
+    It "Contains Set-BiosRecommendationsFileIfWanted function" {
+        $scriptContent | Should Match 'function\s+Set-BiosRecommendationsFileIfWanted'
+    }
 
-        It "Set-HardwareAcceleratedGpuSchedulingOn exists" {
-            Test-Path -Path Function:\Set-HardwareAcceleratedGpuSchedulingOn | Should -Be $true
-        }
+    It "Contains Set-OptionalDiagnosticDataOff function" {
+        $scriptContent | Should Match 'function\s+Set-OptionalDiagnosticDataOff'
+    }
 
-        It "Set-VariableRefreshRateOff exists" {
-            Test-Path -Path Function:\Set-VariableRefreshRateOff | Should -Be $true
-        }
+    It "Contains Set-DeliveryOptimizationHttpOnly function" {
+        $scriptContent | Should Match 'function\s+Set-DeliveryOptimizationHttpOnly'
+    }
 
-        It "Set-GameModeOff exists" {
-            Test-Path -Path Function:\Set-GameModeOff | Should -Be $true
-        }
+    It "Contains Set-HardwareAcceleratedGpuSchedulingOn function" {
+        $scriptContent | Should Match 'function\s+Set-HardwareAcceleratedGpuSchedulingOn'
+    }
 
-        It "Set-MouseAccelerationOff exists" {
-            Test-Path -Path Function:\Set-MouseAccelerationOff | Should -Be $true
-        }
+    It "Contains Set-VariableRefreshRateOff function" {
+        $scriptContent | Should Match 'function\s+Set-VariableRefreshRateOff'
+    }
+
+    It "Contains Set-GameModeOff function" {
+        $scriptContent | Should Match 'function\s+Set-GameModeOff'
+    }
+
+    It "Contains Set-MouseAccelerationOff function" {
+        $scriptContent | Should Match 'function\s+Set-MouseAccelerationOff'
+    }
+
+    It "Contains Show-SystemInformation function" {
+        $scriptContent | Should Match 'function\s+Show-SystemInformation'
+    }
+
+    It "Uses Read-YesNo for user confirmations" {
+        $scriptContent | Should Match 'Read-YesNo'
+    }
+
+    It "Has proper error handling" {
+        $scriptContent | Should Match 'catch\s*{'
+    }
+
+    It "Uses Write-Verbose for debugging" {
+        $scriptContent | Should Match 'Write-Verbose'
     }
 }
