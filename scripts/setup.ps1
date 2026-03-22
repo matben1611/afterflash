@@ -1021,3 +1021,6 @@ try {
 catch {
     Write-Error $_
 }
+finally {
+    Read-Host "`nPress Enter to exit..."
+}
