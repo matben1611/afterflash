@@ -34,30 +34,40 @@ After a fresh Windows installation, many users manually change the same
 settings over and over again. This script helps reduce that repetitive work
 by applying predefined system changes through PowerShell.
 
-The current implementation includes:
+**System Information**
 
-- Overview to most important system components
-- Opening relating driver download sites for AMD/NVIDIA GPUs
-- Opening chipset driver download sites based on CPU (Intel/AMD)
-- Creating png with tipps for Bios/Uefi tuning for gaming and
-  benchmark perfomance
-- Enabling **Hardware-Accelerated GPU Scheduling**
-- Disabling **Variable Refresh Rate**
-- Disabling **Game Mode**
-- Setting **Balanced Power Mode** if an **X3D CPU** is installed
-- Disabling **mouse acceleration**
-- Disabling **optional diagnostic data**
-- Restricting **Delivery Optimization**
-- Optional prompt to enable **System Protection**
-- Optional prompt to enable **Clipboard History**
-- Optional prompt to open **Do Not Disturb / Notifications
-  settings**
-- Optional creation of a **BIOS recommendations text file** on
-  the desktop
-- Optional prompt to open **Ninite** for bulk app installation
-- Optional prompt to launch the **Raphire Debloater**
-- A separate **verification script** for manually checking applied
-  settings through the relevant Windows pages
+- Overview of CPU, GPU, RAM, mainboard, BIOS version and OS
+
+**Driver Downloads**
+
+- GPU driver page for AMD or NVIDIA (auto-detected)
+- Chipset driver page for Intel or AMD (auto-detected)
+
+**Performance** *(applied with confirmation)*
+
+- Hardware-Accelerated GPU Scheduling: **On**
+- Variable Refresh Rate: **Off**
+- Game Mode: **Off**
+- Mouse Acceleration: **Off**
+- Balanced Power Plan for **X3D CPUs**
+
+**Privacy** *(applied with confirmation)*
+
+- Optional diagnostic data: **disabled**
+- Delivery Optimization P2P: **disabled**
+
+**Optional**
+
+- System Protection (restore points) on C:
+- Clipboard History
+- Do Not Disturb / Notifications
+- BIOS recommendations file on the Desktop
+
+**Tools**
+
+- [Ninite](https://ninite.com/) for bulk app installation
+- [Win11Debloat](https://github.com/Raphire/Win11Debloat) integration
+- Verification script to manually check applied settings
 
 The script is intentionally interactive for selected settings so the
 user can decide case by case during execution.
