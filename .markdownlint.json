@@ -3,6 +3,7 @@
   "no-hard-tabs": false,
   "line-length": {
     "line_length": 80,
+    "code_blocks": false,
     "level": "error"
   },
   "no-trailing-spaces": true,

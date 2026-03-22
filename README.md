@@ -34,16 +34,16 @@ After a fresh Windows installation, many users manually change the same
 settings over and over again. This script helps reduce that repetitive work
 by applying predefined system changes through PowerShell.
 
-**System Information**
+### System Information
 
 - Overview of CPU, GPU, RAM, mainboard, BIOS version and OS
 
-**Driver Downloads**
+### Driver Downloads
 
 - GPU driver page for AMD or NVIDIA (auto-detected)
 - Chipset driver page for Intel or AMD (auto-detected)
 
-**Performance** *(applied with confirmation)*
+### Performance *(applied with confirmation)*
 
 - Hardware-Accelerated GPU Scheduling: **On**
 - Variable Refresh Rate: **Off**
@@ -51,19 +51,19 @@ by applying predefined system changes through PowerShell.
 - Mouse Acceleration: **Off**
 - Balanced Power Plan for **X3D CPUs**
 
-**Privacy** *(applied with confirmation)*
+### Privacy *(applied with confirmation)*
 
 - Optional diagnostic data: **disabled**
 - Delivery Optimization P2P: **disabled**
 
-**Optional**
+### Optional
 
 - System Protection (restore points) on C:
 - Clipboard History
 - Do Not Disturb / Notifications
 - BIOS recommendations file on the Desktop
 
-**Tools**
+### Tools
 
 - [Ninite](https://ninite.com/) for bulk app installation
 - [Win11Debloat](https://github.com/Raphire/Win11Debloat) integration

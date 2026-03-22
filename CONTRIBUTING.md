@@ -25,6 +25,7 @@ Thank you for your interest in contributing to this project!
 ## Commit Messages
 
 Use conventional commits:
+
 - `feat:` for new features
 - `fix:` for bug fixes
 - `docs:` for documentation
@@ -64,7 +65,7 @@ npm install -g markdownlint-cli
 markdownlint -c .markdownlint.json .
 ```
 
-**Requirements:** Node.js and npm (install from https://nodejs.org/)  
+**Requirements:** Node.js and npm (install from [nodejs.org](https://nodejs.org/))
 **What it tests:** Documentation formatting and consistency
 
 ### Run All Tests
@@ -77,6 +78,7 @@ markdownlint -c .markdownlint.json .
 ```
 
 **Test Guidelines:**
+
 - Add tests for new functionality in `/tests`
 - Tests use Pester 5.7.1 framework
 - All tests must pass before submitting PR
