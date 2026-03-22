@@ -574,6 +574,31 @@ function Set-BalancedPowerPlanIfX3D {
     Write-Host ""
 }
 
+function Start-WindowsUpdateIfWanted {
+    Write-Host ""
+    $startUpdate = Read-YesNo -Prompt "Do you want to check for Windows Updates now"
+
+    if ($startUpdate) {
+        Write-Info "Triggering Windows Update scan..."
+
+        try {
+            Start-Process "UsoClient.exe" -ArgumentList "StartScan"
+        }
+        catch {
+            Write-Verbose "UsoClient scan trigger failed, continuing..."
+        }
+
+        Start-Process "ms-settings:windowsupdate"
+        Write-Ok "Windows Update scan triggered."
+        Write-Info "Check the Windows Update page for progress."
+    }
+    else {
+        Write-Info "Windows Update was not started."
+    }
+
+    Write-Host ""
+}
+
 function Start-DebloaterIfWanted {
     Write-Host ""
     $startDebloater = Read-YesNo -Prompt "Do you want to start the debloater"
@@ -977,13 +1002,15 @@ try {
     Set-SystemProtectionIfWanted
     Set-ClipboardHistoryIfWanted
     Test-DoNotDisturbIfWanted
-
+    
     Write-Host ""
     Write-Host "========================================"
     Write-Host "          Settings Applied              "
     Write-Host "========================================"
     Write-Host ""
-
+    
+    Start-WindowsUpdateIfWanted
+    Wait-A-Bit
     Start-DebloaterIfWanted
     Wait-A-Bit
 
