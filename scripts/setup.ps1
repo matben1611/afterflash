@@ -737,6 +737,11 @@ function Show-SystemInformation {
     Write-Host ("{0,-20}: {1}" -f "OS Type", $osType)
 
     Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    Write-Host ""
 }
 
 function Open-GpuDriverPageIfWanted {
