@@ -68,7 +68,7 @@ jobs:
         shell: pwsh
         run: |
           Remove-Module Pester -Force -ErrorAction SilentlyContinue
-          Invoke-Pester -Path ./tests -Output Detailed
+          Invoke-Pester -Path ./tests/*.tests.ps1 -Output Detailed
 
   markdown:
     name: Markdown Lint
