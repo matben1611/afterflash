@@ -1020,6 +1020,10 @@ function Open-ChipsetsDriverPageIfWanted {
 try {
     Restart-AsAdmin
 
+    $Host.UI.RawUI.BackgroundColor = 'Black'
+    $Host.UI.RawUI.ForegroundColor = 'White'
+    Clear-Host
+
     Write-Host ""
     Write-Host "========================================"
     Write-Host "         Windows Setup Starting         "
