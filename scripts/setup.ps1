@@ -10,9 +10,10 @@ $modulesDir = Join-Path $PSScriptRoot 'modules'
 . "$modulesDir\tweaks.ps1"
 . "$modulesDir\apps.ps1"
 
-$script:quickSetup  = $false
-$script:currentStep = 0
-$script:totalSteps  = 28
+$script:quickSetup       = $false
+$script:currentStep      = 0
+$script:totalSteps       = 28
+$script:debloaterStarted = $false
 
 function Invoke-Step {
     param(
@@ -105,5 +106,7 @@ catch {
     Write-Error $_
 }
 finally {
-    Read-Host "`nPress Enter to exit..."
+    if (-not $script:debloaterStarted) {
+        Read-Host "`nPress Enter to exit..."
+    }
 }
