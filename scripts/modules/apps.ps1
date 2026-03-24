@@ -273,9 +273,6 @@ function Start-DebloaterIfWanted {
         )
 
         Write-Ok "Debloater started in a new window."
-        $script:debloaterStarted = $true
-        Start-Sleep -Milliseconds 500
-        exit
     }
     else {
         Write-Info "Debloater was not started."

@@ -689,9 +689,6 @@ function Start-DebloaterIfWanted {
         )
 
         Write-Ok "Debloater started in a new window."
-        $script:debloaterStarted = $true
-        Start-Sleep -Milliseconds 500
-        exit
     }
     else {
         Write-Info "Debloater was not started."
@@ -1374,10 +1371,9 @@ function Open-CrystalDiskMarkIfWanted {
     Write-Host ""
 }
 
-$script:quickSetup       = $false
-$script:currentStep      = 0
-$script:totalSteps       = 28
-$script:debloaterStarted = $false
+$script:quickSetup  = $false
+$script:currentStep = 0
+$script:totalSteps  = 28
 
 function Invoke-Step {
     param(
@@ -1470,7 +1466,5 @@ catch {
     Write-Error $_
 }
 finally {
-    if (-not $script:debloaterStarted) {
-        Read-Host "`nPress Enter to exit..."
-    }
+    Read-Host "`nPress Enter to exit..."
 }
