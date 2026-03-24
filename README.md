@@ -15,6 +15,8 @@ time and reducing repetitive setup work after each build.
 
 ## Features
 
+---
+
 ### System Information
 
 - Overview of CPU, GPU, RAM, mainboard, BIOS version and OS
@@ -64,6 +66,8 @@ time and reducing repetitive setup work after each build.
 
 ## Quick Start
 
+---
+
 ### Option A — Standalone EXE *(recommended for USB use)*
 
 Download `afterflash.exe` and run it directly — no installation needed.
@@ -99,6 +103,8 @@ Get-ChildItem -Path . -Filter *.ps1 -Recurse | Unblock-File
 
 ## Requirements
 
+---
+
 - **Windows 10** or **Windows 11**
 - **PowerShell 5.0+** (pre-installed on Windows 10/11)
 - **Administrator privileges** (script will request elevation automatically)
@@ -106,6 +112,8 @@ Get-ChildItem -Path . -Filter *.ps1 -Recurse | Unblock-File
 <br>
 
 ## Verification
+
+---
 
 After running the setup, use the verification script to manually check
 that settings were applied correctly:
@@ -120,6 +128,8 @@ This script opens relevant Windows settings pages without making any changes.
 
 ## Building the EXE
 
+---
+
 The EXE is built from `afterflash-standalone.bat` using the build script:
 
 ```powershell
@@ -132,6 +142,8 @@ administrator privileges.
 <br>
 
 ## Development
+
+---
 
 ### Running Tests
 
@@ -159,6 +171,8 @@ markdownlint -c .markdownlint.json .
 
 ## External Tools
 
+---
+
 ### Win11Debloat
 
 [Win11Debloat](https://github.com/Raphire/Win11Debloat) by Raphire is not bundled.
@@ -179,6 +193,8 @@ the official website in the browser.
 
 ## BIOS Recommendations
 
+---
+
 > [!CAUTION]
 > **Do not change BIOS settings unless you understand what they do
 > and are willing to test system stability properly afterward.**
@@ -191,5 +207,7 @@ the official website in the browser.
 <br>
 
 ## License
+
+---
 
 This project is licensed under the [MIT License](LICENSE).
