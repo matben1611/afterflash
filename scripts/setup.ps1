@@ -11,7 +11,7 @@ $modulesDir = Join-Path $PSScriptRoot 'modules'
 . "$modulesDir\apps.ps1"
 
 $script:currentStep = 0
-$script:totalSteps  = 16
+$script:totalSteps  = 28
 
 function Invoke-Step {
     param(
@@ -47,22 +47,34 @@ try {
 
     Wait-A-Bit
 
-    Invoke-Step 'BIOS Recommendations'    { Set-BiosRecommendationsFileIfWanted }
-    Invoke-Step 'App Installer (Ninite)'  { Open-NiniteIfWanted }
-    Invoke-Step 'GPU Drivers'             { Open-GpuDriverPageIfWanted }
-    Invoke-Step 'Chipset Drivers'         { Open-ChipsetsDriverPageIfWanted }
-    Invoke-Step 'GPU Scheduling'          { Set-HardwareAcceleratedGpuSchedulingOn }
-    Invoke-Step 'Variable Refresh Rate'   { Set-VariableRefreshRateOn }
-    Invoke-Step 'Game Mode'               { Set-GameModeOff }
-    Invoke-Step 'Power Plan'              { Set-PowerPlan }
-    Invoke-Step 'Mouse Acceleration'      { Set-MouseAccelerationOff }
-    Invoke-Step 'Diagnostic Data'         { Set-OptionalDiagnosticDataOff }
-    Invoke-Step 'Delivery Optimization'   { Set-DeliveryOptimizationHttpOnly }
-    Invoke-Step 'System Protection'       { Set-SystemProtectionIfWanted }
-    Invoke-Step 'Clipboard History'       { Set-ClipboardHistoryIfWanted }
-    Invoke-Step 'Do Not Disturb'          { Test-DoNotDisturbIfWanted }
-    Invoke-Step 'Windows Update'          { Start-WindowsUpdateIfWanted }
-    Invoke-Step 'Debloater'               { Start-DebloaterIfWanted }
+    Invoke-Step 'BIOS Recommendations'       { Set-BiosRecommendationsFileIfWanted }
+    Invoke-Step 'App Installer (Ninite)'    { Open-NiniteIfWanted }
+    Invoke-Step 'GPU Drivers'               { Open-GpuDriverPageIfWanted }
+    Invoke-Step 'DDU'                       { Open-DduPageIfWanted }
+    Invoke-Step 'Chipset Drivers'           { Open-ChipsetsDriverPageIfWanted }
+    Invoke-Step 'Monitoring Tools'          { Open-MonitoringToolsIfWanted }
+    Invoke-Step 'CrystalDiskMark'           { Open-CrystalDiskMarkIfWanted }
+    Invoke-Step 'GPU Scheduling'            { Set-HardwareAcceleratedGpuSchedulingOn }
+    Invoke-Step 'Variable Refresh Rate'     { Set-VariableRefreshRateOn }
+    Invoke-Step 'Game Mode'                 { Set-GameModeOff }
+    Invoke-Step 'Xbox Game Bar'             { Set-XboxGameBarOff }
+    Invoke-Step 'Fullscreen Optimizations'  { Set-FullscreenOptimizationsOff }
+    Invoke-Step 'Timer Resolution'          { Set-TimerResolution }
+    Invoke-Step 'MSI Mode'                  { Set-MsiModeForGpu }
+    Invoke-Step 'Power Plan'                { Set-PowerPlan }
+    Invoke-Step 'Mouse Acceleration'        { Set-MouseAccelerationOff }
+    Invoke-Step 'File Extensions'           { Set-FileExtensionsVisible }
+    Invoke-Step 'Hidden Files'              { Set-HiddenFilesVisible }
+    Invoke-Step 'Dark Mode'                 { Set-DarkModeOn }
+    Invoke-Step 'Diagnostic Data'           { Set-OptionalDiagnosticDataOff }
+    Invoke-Step 'Delivery Optimization'     { Set-DeliveryOptimizationHttpOnly }
+    Invoke-Step 'DNS'                       { Set-DnsServers }
+    Invoke-Step 'NIC Power Saving'          { Set-NicPowerSavingOff }
+    Invoke-Step 'System Protection'         { Set-SystemProtectionIfWanted }
+    Invoke-Step 'Clipboard History'         { Set-ClipboardHistoryIfWanted }
+    Invoke-Step 'Do Not Disturb'            { Test-DoNotDisturbIfWanted }
+    Invoke-Step 'Windows Update'            { Start-WindowsUpdateIfWanted }
+    Invoke-Step 'Debloater'                 { Start-DebloaterIfWanted }
 
     Write-Host ""
     Write-Host "========================================"

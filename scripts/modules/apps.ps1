@@ -159,6 +159,63 @@ function Open-ChipsetsDriverPageIfWanted {
     }
 }
 
+function Open-DduPageIfWanted {
+    Write-Host ""
+    $openDdu = Read-YesNo -Prompt "Do you want to open the DDU (Display Driver Uninstaller) download page"
+
+    if ($openDdu) {
+        Write-Info "Opening DDU download page..."
+        Start-Process "https://www.guru3d.com/files-details/display-driver-uninstaller-download.html"
+        Write-Ok "DDU page opened."
+    }
+    else {
+        Write-Info "DDU page was not opened."
+    }
+
+    Write-Host ""
+}
+
+function Open-MonitoringToolsIfWanted {
+    Write-Host ""
+    Write-Info "Monitoring Tools"
+
+    $openHwinfo = Read-YesNo -Prompt "Do you want to open the HWiNFO64 download page"
+    if ($openHwinfo) {
+        Start-Process "https://www.hwinfo.com/download/"
+        Write-Ok "HWiNFO64 page opened."
+    }
+
+    $openGpuz = Read-YesNo -Prompt "Do you want to open the GPU-Z download page"
+    if ($openGpuz) {
+        Start-Process "https://www.techpowerup.com/gpuz/"
+        Write-Ok "GPU-Z page opened."
+    }
+
+    $openCpuz = Read-YesNo -Prompt "Do you want to open the CPU-Z download page"
+    if ($openCpuz) {
+        Start-Process "https://www.cpuid.com/softwares/cpu-z.html"
+        Write-Ok "CPU-Z page opened."
+    }
+
+    Write-Host ""
+}
+
+function Open-CrystalDiskMarkIfWanted {
+    Write-Host ""
+    $openCdm = Read-YesNo -Prompt "Do you want to open the CrystalDiskMark download page"
+
+    if ($openCdm) {
+        Write-Info "Opening CrystalDiskMark download page..."
+        Start-Process "https://crystalmark.info/en/software/crystaldiskmark/"
+        Write-Ok "CrystalDiskMark page opened."
+    }
+    else {
+        Write-Info "CrystalDiskMark page was not opened."
+    }
+
+    Write-Host ""
+}
+
 function Open-NiniteIfWanted {
     Write-Host ""
     $openNinite = Read-YesNo -Prompt "Do you want to open Ninite to install useful apps"

@@ -1039,8 +1039,328 @@ function Open-ChipsetsDriverPageIfWanted {
     }
 }
 
+function Set-XboxGameBarOff {
+    Write-Host ""
+    $disableGameBar = Read-YesNo -Prompt "Do you want to disable Xbox Game Bar"
+
+    if ($disableGameBar) {
+        Write-Info "Disabling Xbox Game Bar..."
+
+        Set-DwordValue `
+            -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR' `
+            -Name 'AppCaptureEnabled' `
+            -Value 0
+
+        Set-DwordValue `
+            -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR' `
+            -Name 'AllowGameDVR' `
+            -Value 0
+
+        Write-Ok "Xbox Game Bar disabled."
+    }
+    else {
+        Write-Info "Xbox Game Bar settings were not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-FullscreenOptimizationsOff {
+    Write-Host ""
+    $disableFso = Read-YesNo -Prompt "Do you want to disable fullscreen optimizations globally"
+
+    if ($disableFso) {
+        Write-Info "Disabling fullscreen optimizations..."
+
+        Set-DwordValue `
+            -Path 'HKCU:\System\GameConfigStore' `
+            -Name 'GameDVR_FSEBehaviorMode' `
+            -Value 2
+
+        Set-DwordValue `
+            -Path 'HKCU:\System\GameConfigStore' `
+            -Name 'GameDVR_HonorUserFSEBehaviorMode' `
+            -Value 1
+
+        Set-DwordValue `
+            -Path 'HKCU:\System\GameConfigStore' `
+            -Name 'GameDVR_FSEBehavior' `
+            -Value 2
+
+        Set-DwordValue `
+            -Path 'HKCU:\System\GameConfigStore' `
+            -Name 'GameDVR_DXGIHonorFSEWindowsCompatible' `
+            -Value 1
+
+        Write-Ok "Fullscreen optimizations disabled."
+        Write-WarnMsg "Signing out/in or restarting may be required."
+    }
+    else {
+        Write-Info "Fullscreen optimization settings were not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-TimerResolution {
+    Write-Host ""
+    $setTimer = Read-YesNo -Prompt "Do you want to enable high-precision timer resolution"
+
+    if ($setTimer) {
+        Write-Info "Configuring timer resolution..."
+        bcdedit /set useplatformtick yes | Out-Null
+        bcdedit /set disabledynamictick yes | Out-Null
+        Write-Ok "High-precision timer resolution enabled."
+        Write-WarnMsg "A restart is required for this change to take effect."
+    }
+    else {
+        Write-Info "Timer resolution was not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-MsiModeForGpu {
+    Write-Host ""
+    $enableMsi = Read-YesNo -Prompt "Do you want to enable MSI mode for your GPU"
+
+    if (-not $enableMsi) {
+        Write-Info "MSI mode was not changed."
+        Write-Host ""
+        return
+    }
+
+    Write-Info "Enabling MSI mode for GPU..."
+
+    try {
+        $gpus = Get-CimInstance Win32_VideoController -ErrorAction Stop |
+            Where-Object { $_.PNPDeviceID -like 'PCI\*' }
+
+        if (-not $gpus) {
+            Write-WarnMsg "No PCI GPU found."
+            Write-Host ""
+            return
+        }
+
+        foreach ($gpu in $gpus) {
+            $msiPath      = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($gpu.PNPDeviceID)\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties"
+            $affinityPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($gpu.PNPDeviceID)\Device Parameters\Interrupt Management\Affinity Policy"
+
+            Test-RegistryKey -Path $msiPath
+            New-ItemProperty -Path $msiPath -Name 'MSISupported' -Value 1 -PropertyType DWord -Force | Out-Null
+
+            Test-RegistryKey -Path $affinityPath
+            New-ItemProperty -Path $affinityPath -Name 'DevicePriority' -Value 3 -PropertyType DWord -Force | Out-Null
+
+            Write-Ok "MSI mode enabled for: $($gpu.Name)"
+        }
+
+        Write-WarnMsg "A restart is required for MSI mode to take effect."
+    }
+    catch {
+        Write-WarnMsg "Could not enable MSI mode: $_"
+    }
+
+    Write-Host ""
+}
+
+function Set-FileExtensionsVisible {
+    Write-Host ""
+    $showExtensions = Read-YesNo -Prompt "Do you want to show file extensions in Explorer"
+
+    if ($showExtensions) {
+        Write-Info "Enabling file extensions in Explorer..."
+
+        Set-DwordValue `
+            -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' `
+            -Name 'HideFileExt' `
+            -Value 0
+
+        Write-Ok "File extensions are now visible."
+        Write-WarnMsg "Restart Explorer or sign out to apply."
+    }
+    else {
+        Write-Info "File extension settings were not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-DarkModeOn {
+    Write-Host ""
+    $enableDarkMode = Read-YesNo -Prompt "Do you want to enable Dark Mode"
+
+    if ($enableDarkMode) {
+        Write-Info "Enabling Dark Mode..."
+
+        $path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+        Set-DwordValue -Path $path -Name 'AppsUseLightTheme'    -Value 0
+        Set-DwordValue -Path $path -Name 'SystemUsesLightTheme' -Value 0
+
+        Write-Ok "Dark Mode enabled."
+    }
+    else {
+        Write-Info "Dark Mode settings were not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-HiddenFilesVisible {
+    Write-Host ""
+    $showHidden = Read-YesNo -Prompt "Do you want to show hidden files in Explorer"
+
+    if ($showHidden) {
+        Write-Info "Enabling hidden files in Explorer..."
+
+        Set-DwordValue `
+            -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' `
+            -Name 'Hidden' `
+            -Value 1
+
+        Write-Ok "Hidden files are now visible."
+        Write-WarnMsg "Restart Explorer or sign out to apply."
+    }
+    else {
+        Write-Info "Hidden file settings were not changed."
+    }
+
+    Write-Host ""
+}
+
+function Set-DnsServers {
+    Write-Host ""
+    $setDns = Read-YesNo -Prompt "Do you want to set custom DNS servers"
+
+    if (-not $setDns) {
+        Write-Info "DNS settings were not changed."
+        Write-Host ""
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  1. Cloudflare (1.1.1.1 / 1.0.0.1) - Fast, privacy-focused"
+    Write-Host "  2. Google    (8.8.8.8 / 8.8.4.4)  - Reliable, widely used"
+    Write-Host ""
+
+    $choice = ""
+    while ($choice -ne '1' -and $choice -ne '2') {
+        $choice = (Read-Host "  Select DNS provider (1/2)").Trim()
+        if ($choice -ne '1' -and $choice -ne '2') {
+            Write-Host "  Please enter 1 or 2."
+        }
+    }
+
+    if ($choice -eq '1') {
+        $primary   = '1.1.1.1'
+        $secondary = '1.0.0.1'
+        $provider  = 'Cloudflare'
+    }
+    else {
+        $primary   = '8.8.8.8'
+        $secondary = '8.8.4.4'
+        $provider  = 'Google'
+    }
+
+    Write-Info "Setting DNS to $provider ($primary / $secondary)..."
+
+    $adapters = Get-NetAdapter -Physical | Where-Object { $_.Status -eq 'Up' }
+    foreach ($adapter in $adapters) {
+        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses @($primary, $secondary)
+        Write-Ok "DNS set on: $($adapter.Name)"
+    }
+
+    Write-Host ""
+}
+
+function Set-NicPowerSavingOff {
+    Write-Host ""
+    $disableNicPower = Read-YesNo -Prompt "Do you want to disable NIC power saving"
+
+    if (-not $disableNicPower) {
+        Write-Info "NIC power saving settings were not changed."
+        Write-Host ""
+        return
+    }
+
+    Write-Info "Disabling NIC power saving..."
+
+    $adapterClass = 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}'
+    $count = 0
+
+    Get-ChildItem $adapterClass -ErrorAction SilentlyContinue | ForEach-Object {
+        $netCfgId = (Get-ItemProperty $_.PSPath -Name 'NetCfgInstanceId' -ErrorAction SilentlyContinue).NetCfgInstanceId
+        if ($netCfgId) {
+            New-ItemProperty -Path $_.PSPath -Name 'PnPCapabilities' -Value 24 -PropertyType DWord -Force | Out-Null
+            $count++
+        }
+    }
+
+    Write-Ok "NIC power saving disabled on $count adapter(s)."
+    Write-WarnMsg "A restart is required for this change to take effect."
+
+    Write-Host ""
+}
+
+function Open-DduPageIfWanted {
+    Write-Host ""
+    $openDdu = Read-YesNo -Prompt "Do you want to open the DDU (Display Driver Uninstaller) download page"
+
+    if ($openDdu) {
+        Write-Info "Opening DDU download page..."
+        Start-Process "https://www.guru3d.com/files-details/display-driver-uninstaller-download.html"
+        Write-Ok "DDU page opened."
+    }
+    else {
+        Write-Info "DDU page was not opened."
+    }
+
+    Write-Host ""
+}
+
+function Open-MonitoringToolsIfWanted {
+    Write-Host ""
+    Write-Info "Monitoring Tools"
+
+    $openHwinfo = Read-YesNo -Prompt "Do you want to open the HWiNFO64 download page"
+    if ($openHwinfo) {
+        Start-Process "https://www.hwinfo.com/download/"
+        Write-Ok "HWiNFO64 page opened."
+    }
+
+    $openGpuz = Read-YesNo -Prompt "Do you want to open the GPU-Z download page"
+    if ($openGpuz) {
+        Start-Process "https://www.techpowerup.com/gpuz/"
+        Write-Ok "GPU-Z page opened."
+    }
+
+    $openCpuz = Read-YesNo -Prompt "Do you want to open the CPU-Z download page"
+    if ($openCpuz) {
+        Start-Process "https://www.cpuid.com/softwares/cpu-z.html"
+        Write-Ok "CPU-Z page opened."
+    }
+
+    Write-Host ""
+}
+
+function Open-CrystalDiskMarkIfWanted {
+    Write-Host ""
+    $openCdm = Read-YesNo -Prompt "Do you want to open the CrystalDiskMark download page"
+
+    if ($openCdm) {
+        Write-Info "Opening CrystalDiskMark download page..."
+        Start-Process "https://crystalmark.info/en/software/crystaldiskmark/"
+        Write-Ok "CrystalDiskMark page opened."
+    }
+    else {
+        Write-Info "CrystalDiskMark page was not opened."
+    }
+
+    Write-Host ""
+}
+
 $script:currentStep = 0
-$script:totalSteps  = 16
+$script:totalSteps  = 28
 
 function Invoke-Step {
     param(
@@ -1076,22 +1396,34 @@ try {
 
     Wait-A-Bit
 
-    Invoke-Step 'BIOS Recommendations'    { Set-BiosRecommendationsFileIfWanted }
-    Invoke-Step 'App Installer (Ninite)'  { Open-NiniteIfWanted }
-    Invoke-Step 'GPU Drivers'             { Open-GpuDriverPageIfWanted }
-    Invoke-Step 'Chipset Drivers'         { Open-ChipsetsDriverPageIfWanted }
-    Invoke-Step 'GPU Scheduling'          { Set-HardwareAcceleratedGpuSchedulingOn }
-    Invoke-Step 'Variable Refresh Rate'   { Set-VariableRefreshRateOn }
-    Invoke-Step 'Game Mode'               { Set-GameModeOff }
-    Invoke-Step 'Power Plan'              { Set-PowerPlan }
-    Invoke-Step 'Mouse Acceleration'      { Set-MouseAccelerationOff }
-    Invoke-Step 'Diagnostic Data'         { Set-OptionalDiagnosticDataOff }
-    Invoke-Step 'Delivery Optimization'   { Set-DeliveryOptimizationHttpOnly }
-    Invoke-Step 'System Protection'       { Set-SystemProtectionIfWanted }
-    Invoke-Step 'Clipboard History'       { Set-ClipboardHistoryIfWanted }
-    Invoke-Step 'Do Not Disturb'          { Test-DoNotDisturbIfWanted }
-    Invoke-Step 'Windows Update'          { Start-WindowsUpdateIfWanted }
-    Invoke-Step 'Debloater'               { Start-DebloaterIfWanted }
+    Invoke-Step 'BIOS Recommendations'       { Set-BiosRecommendationsFileIfWanted }
+    Invoke-Step 'App Installer (Ninite)'    { Open-NiniteIfWanted }
+    Invoke-Step 'GPU Drivers'               { Open-GpuDriverPageIfWanted }
+    Invoke-Step 'DDU'                       { Open-DduPageIfWanted }
+    Invoke-Step 'Chipset Drivers'           { Open-ChipsetsDriverPageIfWanted }
+    Invoke-Step 'Monitoring Tools'          { Open-MonitoringToolsIfWanted }
+    Invoke-Step 'CrystalDiskMark'           { Open-CrystalDiskMarkIfWanted }
+    Invoke-Step 'GPU Scheduling'            { Set-HardwareAcceleratedGpuSchedulingOn }
+    Invoke-Step 'Variable Refresh Rate'     { Set-VariableRefreshRateOn }
+    Invoke-Step 'Game Mode'                 { Set-GameModeOff }
+    Invoke-Step 'Xbox Game Bar'             { Set-XboxGameBarOff }
+    Invoke-Step 'Fullscreen Optimizations'  { Set-FullscreenOptimizationsOff }
+    Invoke-Step 'Timer Resolution'          { Set-TimerResolution }
+    Invoke-Step 'MSI Mode'                  { Set-MsiModeForGpu }
+    Invoke-Step 'Power Plan'                { Set-PowerPlan }
+    Invoke-Step 'Mouse Acceleration'        { Set-MouseAccelerationOff }
+    Invoke-Step 'File Extensions'           { Set-FileExtensionsVisible }
+    Invoke-Step 'Hidden Files'              { Set-HiddenFilesVisible }
+    Invoke-Step 'Dark Mode'                 { Set-DarkModeOn }
+    Invoke-Step 'Diagnostic Data'           { Set-OptionalDiagnosticDataOff }
+    Invoke-Step 'Delivery Optimization'     { Set-DeliveryOptimizationHttpOnly }
+    Invoke-Step 'DNS'                       { Set-DnsServers }
+    Invoke-Step 'NIC Power Saving'          { Set-NicPowerSavingOff }
+    Invoke-Step 'System Protection'         { Set-SystemProtectionIfWanted }
+    Invoke-Step 'Clipboard History'         { Set-ClipboardHistoryIfWanted }
+    Invoke-Step 'Do Not Disturb'            { Test-DoNotDisturbIfWanted }
+    Invoke-Step 'Windows Update'            { Start-WindowsUpdateIfWanted }
+    Invoke-Step 'Debloater'                 { Start-DebloaterIfWanted }
 
     Write-Host ""
     Write-Host "========================================"
