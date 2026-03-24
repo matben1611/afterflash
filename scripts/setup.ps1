@@ -22,8 +22,10 @@ function Invoke-Step {
     )
     $script:currentStep++
 
-    if ($script:quickSetup -and $SkipInQuickSetup) {
-        Write-Host "  [$script:currentStep/$script:totalSteps] $Label (skipped)" -ForegroundColor DarkGray
+    if ($script:quickSetup) {
+        if (-not $SkipInQuickSetup) {
+            try { & $Body } catch { Write-Verbose "Step '$Label' failed: $_" }
+        }
         return
     }
 
@@ -59,6 +61,11 @@ try {
     $script:quickSetup = Read-YesNo -Prompt "Do you want to use Quick Setup (applies all tweaks automatically)"
     Write-Host ""
 
+    if ($script:quickSetup) {
+        Write-Host "  Applying all tweaks..." -ForegroundColor Cyan
+        Write-Host ""
+    }
+
     Invoke-Step 'BIOS Recommendations'       { Set-BiosRecommendationsFileIfWanted }
     Invoke-Step 'App Installer (Ninite)'     { Open-NiniteIfWanted }          -SkipInQuickSetup
     Invoke-Step 'GPU Drivers'                { Open-GpuDriverPageIfWanted }   -SkipInQuickSetup
@@ -83,8 +90,8 @@ try {
     Invoke-Step 'DNS'                        { Set-DnsServers } -SkipInQuickSetup
     Invoke-Step 'NIC Power Saving'           { Set-NicPowerSavingOff }
     Invoke-Step 'System Protection'          { Set-SystemProtectionIfWanted } -SkipInQuickSetup
-    Invoke-Step 'Clipboard History'          { Set-ClipboardHistoryIfWanted }
-    Invoke-Step 'Do Not Disturb'             { Test-DoNotDisturbIfWanted }
+    Invoke-Step 'Clipboard History'          { Set-ClipboardHistoryIfWanted } -SkipInQuickSetup
+    Invoke-Step 'Do Not Disturb'             { Test-DoNotDisturbIfWanted }    -SkipInQuickSetup
     Invoke-Step 'Windows Update'             { Start-WindowsUpdateIfWanted } -SkipInQuickSetup
     Invoke-Step 'Debloater'                  { Start-DebloaterIfWanted }
 
