@@ -71,10 +71,10 @@ read_yes_no() {
     while true; do
         printf '%s (Yes/No): ' "$prompt"
         read -r answer
-        case "${answer,,}" in
-            y|yes) echo ""; return 0 ;;
-            n|no)  echo ""; return 1 ;;
-            *)     echo "Please enter 'Yes' or 'No'." ;;
+        case "$answer" in
+            y|Y|yes|Yes|YES) echo ""; return 0 ;;
+            n|N|no|No|NO)    echo ""; return 1 ;;
+            *)               echo "Please enter 'Yes' or 'No'." ;;
         esac
     done
 }
