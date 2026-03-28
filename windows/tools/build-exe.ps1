@@ -7,19 +7,20 @@ try {
     $ErrorActionPreference = 'Stop'
 
     $toolsDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-    $root     = Split-Path -Parent $toolsDir
+    $root     = Split-Path -Parent $toolsDir      # windows/
+    $repoRoot = Split-Path -Parent $root           # repo root
 
-    $batFile     = Join-Path $root 'afterflash-standalone.bat'
-    $pngFile     = Join-Path $root 'assets\afterflash.png'
-    $versionFile = Join-Path $root 'VERSION'
-    $ps1File     = Join-Path $root 'afterflash-standalone.ps1'
-    $icoFile     = Join-Path $root 'afterflash.ico'
+    $batFile     = Join-Path $root     'afterflash-standalone.bat'
+    $pngFile     = Join-Path $repoRoot 'assets\afterflash-logo.png'
+    $versionFile = Join-Path $repoRoot 'VERSION'
+    $ps1File     = Join-Path $root     'afterflash-standalone.ps1'
+    $icoFile     = Join-Path $root     'afterflash.ico'
     # --- 0. Read version ---
     if (-not (Test-Path $versionFile)) {
         throw "VERSION file not found at $versionFile"
     }
     $version = (Get-Content $versionFile -Raw).Trim()
-    $exeFile = Join-Path $root "afterflash-$version.exe"
+    $exeFile = Join-Path $repoRoot "afterflash-$version.exe"
     Write-Host "Version: $version"
     Write-Host ""
 
