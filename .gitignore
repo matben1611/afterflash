@@ -3,6 +3,9 @@ bios-recommendations.txt
 afterflash*.exe
 afterflash.ico
 afterflash-standalone.ps1
+afterflash-mac-standalone.sh
+afterflash-mac-*.app
+afterflash-mac-*.zip
 
 # PowerShell
 *.ps1xml
