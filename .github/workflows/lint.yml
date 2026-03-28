@@ -22,7 +22,7 @@ jobs:
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
-          $results = Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./scripts/PSScriptAnalyzerSettings.psd1
+          $results = Invoke-ScriptAnalyzer -Path ./windows/scripts -Recurse -Settings ./windows/scripts/PSScriptAnalyzerSettings.psd1
           $errors = $results | Where-Object { $_.Severity -eq 'Error' }
           $warnings = $results | Where-Object { $_.Severity -eq 'Warning' }
           
@@ -61,14 +61,14 @@ jobs:
           Write-Host "Files in workspace:"
           Get-ChildItem -Recurse -Depth 2 | Select-Object -First 30
           Write-Host ""
-          Write-Host "Setup script exists: $(Test-Path './scripts/setup.ps1')"
-          Write-Host "Tests script exists: $(Test-Path './tests/setup.tests.ps1')"
+          Write-Host "Setup script exists: $(Test-Path './windows/scripts/setup.ps1')"
+          Write-Host "Tests script exists: $(Test-Path './windows/tests/setup.tests.ps1')"
 
       - name: Run Pester Tests
         shell: pwsh
         run: |
           Remove-Module Pester -Force -ErrorAction SilentlyContinue
-          Invoke-Pester -Path ./tests/*.tests.ps1 -Output Detailed
+          Invoke-Pester -Path ./windows/tests/*.tests.ps1 -Output Detailed
 
   markdown:
     name: Markdown Lint
